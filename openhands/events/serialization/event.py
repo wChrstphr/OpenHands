@@ -132,8 +132,12 @@ def event_to_dict(event: 'Event') -> dict:
         props.pop('security_risk')
 
     # Handle callouts serialization for MessageAction
-    if 'callouts' in props and props['callouts'] is not None:
-        props['callouts'] = _convert_callouts_to_dict(props['callouts'])
+    if 'callouts' in props:
+        if props['callouts'] is not None:
+            props['callouts'] = _convert_callouts_to_dict(props['callouts'])
+        else:
+            # Remove callouts when None for backward compatibility
+            props.pop('callouts')
 
     # Remove task_completed from serialization when it's None (backward compatibility)
     if 'task_completed' in props and props['task_completed'] is None:

@@ -304,7 +304,8 @@ test_message_action_str_with_callouts PASSED    [100%]
 
 ## 📊 Progresso Atual
 
-### ✅ Concluído (Fase 1 - Backend Data Model - COMPLETA!)
+### ✅ Concluído 
+#### Fase 1 - Backend Data Model (COMPLETA!)
 - [x] Enum CalloutType com 6 tipos
 - [x] Classe CalloutMessage com serialização
 - [x] Integração com MessageAction
@@ -312,13 +313,20 @@ test_message_action_str_with_callouts PASSED    [100%]
 - [x] 13 testes unitários passando (100%)
 - [x] Compatibilidade retroativa mantida
 
+#### Fase 2 - Sistema de Detecção (COMPLETA!)
+- [x] CalloutDetector com padrões regex
+- [x] Detecção de 6 tipos de callouts
+- [x] Extração de contexto automática
+- [x] Enriquecimento de MessageAction
+- [x] 15 testes unitários passando (100%)
+- [x] **Total: 28 testes passando (100%)**
+
 ### 🔄 Em Andamento
-- [ ] Sistema de Detecção Automática (CalloutDetector)
+- [ ] Integração com agentes (response_to_actions)
 
 ### 📅 Próximas Fases
-- [ ] **Fase 2**: Sistema de Detecção (CalloutDetector)
-- [ ] **Fase 3**: Componentes UI Frontend
-- [ ] **Fase 4**: Integração e Configuração
+- [ ] **Fase 3**: Componentes UI Frontend (3 dias)
+- [ ] **Fase 4**: Integração e Configuração (2 dias)
 
 ---
 
@@ -342,12 +350,132 @@ test_message_action_str_with_callouts PASSED    [100%]
 ### Métricas
 - **Cobertura de Testes**: 100% do código implementado tem testes
 - **Tempo por Ciclo TDD**: ~15-30 minutos por funcionalidade
-- **Taxa de Sucesso**: 13/13 testes passando (100%)
+- **Taxa de Sucesso**: 28/28 testes passando (100%)
 - **Fase 1 Status**: ✅ COMPLETA (Backend Data Model)
+- **Fase 2 Status**: ✅ COMPLETA (Sistema de Detecção)
 
 ---
 
-## 🎯 Próximos Passos (Fase 2)
+## 🔴🟢🔵 FASE 2: Sistema de Detecção Automática
+
+### Ciclo TDD 2.1: CalloutDetector Base
+**Data**: 2025-11-13
+
+#### Testes Criados (Red Phase)
+```python
+class TestCalloutDetector:
+    def test_detector_initialization(self):
+        """Test that CalloutDetector can be initialized."""
+        
+    def test_detect_workaround_keyword(self):
+        """Test detection of 'workaround' keyword."""
+        
+    def test_detect_hack_keyword(self):
+        """Test detection of 'hack' keyword."""
+        
+    # ... 15 testes no total
+```
+
+**Resultado Esperado**: ❌ FALHA - CalloutDetector não existe  
+**Status**: ✅ Testes criados e falhando conforme esperado
+
+---
+
+### Implementação 2.1: CalloutDetector
+**Data**: 2025-11-13  
+**Arquivo**: `openhands/utils/callout_detector.py`
+
+```python
+class CalloutDetector:
+    """Detects callouts (workarounds, hacks, compromises) in agent messages."""
+    
+    def __init__(self):
+        """Initialize with regex patterns for each callout type."""
+        self.patterns: dict[CalloutType, list[Pattern]] = {
+            CalloutType.WORKAROUND: [
+                re.compile(r'\bworkaround\b', re.IGNORECASE),
+                re.compile(r'\bwork around\b', re.IGNORECASE),
+            ],
+            CalloutType.HACK: [
+                re.compile(r'\bhack\b', re.IGNORECASE),
+                re.compile(r'\bquick fix\b', re.IGNORECASE),
+                # ... mais padrões
+            ],
+            # ... outros tipos
+        }
+    
+    def detect(self, message: str) -> list[CalloutMessage]:
+        """Detect callouts in a message using regex patterns."""
+        # Implementação de detecção
+        
+    def _extract_context(self, message: str, match: re.Match) -> str:
+        """Extract context around matched keyword."""
+        # Extrai contexto relevante
+        
+    def _generate_title(self, callout_type: CalloutType, matched_text: str) -> str:
+        """Generate descriptive title for callout."""
+        # Gera título apropriado
+        
+    def enrich_message_action(self, action: MessageAction) -> MessageAction:
+        """Enrich MessageAction with auto-detected callouts."""
+        # Adiciona callouts detectados ao MessageAction
+```
+
+**Funcionalidades Implementadas**:
+1. ✅ Detecção por regex patterns
+2. ✅ Suporte a case-insensitive matching
+3. ✅ Extração automática de contexto
+4. ✅ Geração de títulos descritivos
+5. ✅ Enriquecimento de MessageAction
+6. ✅ Previne duplicação de callouts
+7. ✅ Suporte a múltiplos callouts por mensagem
+
+**Resultado**: ✅ 15/15 testes do detector passando
+
+**Padrões de Detecção Implementados**:
+- **WORKAROUND**: "workaround", "work around"
+- **HACK**: "hack", "quick fix", "temporary fix"
+- **COMPROMISE**: "compromise", "trade-off", "suboptimal"
+- **ASSUMPTION**: "assume", "assuming", "expect", "expecting"
+- **INCOMPLETE**: "incomplete", "partial", "temporary solution", "for now", "bypass"
+- **WARNING**: "warning", "caution", "may fail", "might fail", "risk"
+
+---
+
+### Ciclo TDD 2.2: Testes de Integração
+**Data**: 2025-11-13
+
+#### Testes de Enriquecimento
+```python
+def test_enrich_message_action_without_callouts(self):
+    """Test enriching MessageAction without existing callouts."""
+    
+def test_enrich_message_action_with_existing_callouts(self):
+    """Test enriching MessageAction that already has callouts."""
+    
+def test_enrich_message_action_no_detection(self):
+    """Test enriching when no callouts detected."""
+```
+
+**Resultado**: ✅ Todos passando - Integração funciona perfeitamente
+
+---
+
+### Refatoração (Blue Phase)
+**Data**: 2025-11-13
+
+#### Ajustes Realizados
+1. ✅ Correção na geração de títulos (preferir palavra-chave direta)
+2. ✅ Melhoria na extração de contexto (sentenças completas)
+3. ✅ Otimização da lógica de detecção
+
+**Resultado Final**: ✅ 28/28 testes passando (100%)
+- 13 testes de estruturas de dados (Fase 1)
+- 15 testes de detecção (Fase 2)
+
+---
+
+## 🎯 Próximos Passos (Fase 3 - Frontend)
 
 ### 2.1. Completar Serialização
 1. 🔴 Garantir que testes de serialização falhem

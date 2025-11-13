@@ -135,6 +135,17 @@ def action_from_dict(action: dict) -> Action:
             # If conversion fails, remove the invalid value
             args.pop('security_risk')
 
+    # Handle callouts deserialization for MessageAction
+    if 'callouts' in args and args['callouts'] is not None:
+        from openhands.events.action.message import CalloutMessage
+        
+        callouts_data = args['callouts']
+        if isinstance(callouts_data, list):
+            args['callouts'] = [
+                CalloutMessage.from_dict(c) if isinstance(c, dict) else c
+                for c in callouts_data
+            ]
+
     # handle deprecated args
     args = handle_action_deprecated_args(args)
 

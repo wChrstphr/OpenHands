@@ -97,6 +97,14 @@ def _convert_pydantic_to_dict(obj: BaseModel | dict) -> dict:
     return obj
 
 
+def _convert_callouts_to_dict(callouts: list | None) -> list | None:
+    """Convert CalloutMessage objects to dictionaries for serialization."""
+    if callouts is None:
+        return None
+    from openhands.events.action.message import CalloutMessage
+    return [c.to_dict() if isinstance(c, CalloutMessage) else c for c in callouts]
+
+
 def event_to_dict(event: 'Event') -> dict:
     props = asdict(event)
     d = {}
@@ -122,6 +130,14 @@ def event_to_dict(event: 'Event') -> dict:
 
     if 'security_risk' in props and props['security_risk'] is None:
         props.pop('security_risk')
+
+    # Handle callouts serialization for MessageAction
+    if 'callouts' in props:
+        if props['callouts'] is not None:
+            props['callouts'] = _convert_callouts_to_dict(props['callouts'])
+        else:
+            # Remove callouts when None for backward compatibility
+            props.pop('callouts')
 
     # Remove task_completed from serialization when it's None (backward compatibility)
     if 'task_completed' in props and props['task_completed'] is None:
